@@ -1,0 +1,34 @@
+{
+  "properties": [
+    {
+      "name": "file.upload-dir",
+      "type": "java.lang.String",
+      "description": "Directory used for uploaded files."
+    },
+    {
+      "name": "app.jwt.secret",
+      "type": "java.lang.String",
+      "description": "JWT signing secret."
+    },
+    {
+      "name": "app.jwt.expiration-ms",
+      "type": "java.lang.Long",
+      "description": "JWT expiration time in milliseconds."
+    },
+    {
+      "name": "app.cors.allowed-origins",
+      "type": "java.lang.String",
+      "description": "Comma-separated list of allowed CORS origins."
+    },
+    {
+      "name": "app.auth.admin-email-regex",
+      "type": "java.lang.String",
+      "description": "Regex used to auto-assign ADMIN role during registration."
+    },
+    {
+      "name": "app.auth.technician-email-regex",
+      "type": "java.lang.String",
+      "description": "Regex used to auto-assign TECHNICIAN role during registration."
+    }
+  ]
+}
