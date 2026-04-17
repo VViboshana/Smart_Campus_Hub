@@ -150,6 +150,7 @@ const ChatBot = () => {
           newData.resourceId = selectValue;
           const res = resources.find(r => r.id === selectValue);
           newData._resourceName = res?.name || 'Selected resource';
+          newData._resourceCapacity = res?.capacity || 0;
           addUserMsg(newData._resourceName);
         } else {
           const match = resources.find(r => r.name.toLowerCase().includes(userInput.toLowerCase()));
@@ -164,6 +165,7 @@ const ChatBot = () => {
           }
           newData.resourceId = match.id;
           newData._resourceName = match.name;
+          newData._resourceCapacity = match.capacity || 0;
         }
         setFlowData(newData);
         setFlowStep(1);
@@ -234,7 +236,10 @@ const ChatBot = () => {
         newData.purpose = userInput.trim();
         setFlowData(newData);
         setFlowStep(5);
-        addBotMsg('👥 How many **expected attendees**? *(Enter a number, e.g. 10)*', [
+        const capacityHint = newData._resourceCapacity > 0
+          ? ` Max allowed for **${newData._resourceName}** is **${newData._resourceCapacity}**.`
+          : '';
+        addBotMsg(`👥 How many **expected attendees**? *(Enter a number, e.g. 10)*${capacityHint}`, [
           { label: 'Skip (set to 1)', type: 'select', value: '1', icon: '⏭️' },
           { label: 'Cancel', type: 'cancel', value: '', icon: '❌' },
         ]);
@@ -246,6 +251,15 @@ const ChatBot = () => {
           addBotMsg('⚠️ Please enter a valid number (at least 1).');
           return;
         }
+
+        if (newData._resourceCapacity > 0 && num > newData._resourceCapacity) {
+          addBotMsg(
+            `⚠️ **${newData._resourceName}** has a maximum capacity of **${newData._resourceCapacity}**. ` +
+            `Please enter an attendee count between **1** and **${newData._resourceCapacity}**.`
+          );
+          return;
+        }
+
         newData.expectedAttendees = num;
         setFlowData(newData);
         setFlowStep(6);
