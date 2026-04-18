@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { notificationAPI } from '../../services/api';
 import { toast } from 'react-toastify';
-import { FiBell, FiMenu, FiX, FiLogOut, FiHome, FiGrid, FiCalendar, FiAlertCircle, FiUsers, FiChevronDown, FiTrash2, FiSettings } from 'react-icons/fi';
+import { FiBell, FiMenu, FiX, FiLogOut, FiHome, FiGrid, FiCalendar, FiAlertCircle, FiUsers, FiChevronDown, FiTrash2, FiSettings, FiMap } from 'react-icons/fi';
 
 const NOTIFICATION_CHANGE_EVENT = 'notifications:changed';
 
@@ -63,12 +63,14 @@ const Navbar = () => {
     { to: '/resources', label: 'Resources', icon: <FiGrid /> },
     { to: '/bookings', label: 'Bookings', icon: <FiCalendar /> },
     { to: '/tickets', label: 'Tickets', icon: <FiAlertCircle /> },
+    { to: '/heatmap', label: 'Heatmap', icon: <FiMap /> },
   ];
 
   const adminLinks = [
     { to: '/bookings/manage', label: 'Manage Bookings' },
     { to: '/tickets/manage', label: 'Manage Tickets' },
     { to: '/admin/users', label: 'Manage Users' },
+    { to: '/admin/analytics', label: 'Analytics' },
   ];
 
   const isActive = (path) => location.pathname === path;

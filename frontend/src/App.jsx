@@ -6,6 +6,7 @@ import { useAuth } from './context/AuthContext';
 // Layouts
 import Navbar from './components/layout/Navbar';
 import ChatBot from './components/chat/ChatBot';
+import SmartBookingAssistant from './pages/SmartBookingAssistant';
 
 // Auth Pages
 import Login from './pages/auth/Login';
@@ -26,7 +27,9 @@ import TicketDetail from './pages/tickets/TicketDetail';
 import TicketManagement from './pages/tickets/TicketManagement';
 import Notifications from './pages/Notifications';
 import AdminUsers from './pages/admin/AdminUsers';
+import AdminAnalytics from './pages/admin/AdminAnalytics';
 import Settings from './pages/Settings';
+import ResourceHeatmap from './pages/ResourceHeatmap';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { user, loading } = useAuth();
@@ -54,6 +57,7 @@ function App() {
       <ToastContainer position="top-right" autoClose={3000} />
       {user && <Navbar />}
       {user && <ChatBot />}
+      {user && <SmartBookingAssistant />}
       <main className={user ? 'pt-16' : ''}>
         <Routes>
           {/* Public Routes */}
@@ -76,6 +80,8 @@ function App() {
           <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
           <Route path="/admin/users" element={<ProtectedRoute adminOnly><AdminUsers /></ProtectedRoute>} />
+          <Route path="/admin/analytics" element={<ProtectedRoute adminOnly><AdminAnalytics /></ProtectedRoute>} />
+          <Route path="/heatmap" element={<ProtectedRoute><ResourceHeatmap /></ProtectedRoute>} />
 
           {/* Catch all */}
           <Route path="*" element={<Navigate to="/" />} />
