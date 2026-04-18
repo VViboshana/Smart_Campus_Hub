@@ -3,7 +3,6 @@ package com.smartcampus.service;
 import com.smartcampus.dto.response.TicketSLADTO;
 import com.smartcampus.exception.BadRequestException;
 import com.smartcampus.model.Ticket;
-import com.smartcampus.model.TicketPriority;
 import com.smartcampus.model.TicketStatus;
 import com.smartcampus.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +24,7 @@ public class TicketSLAService {
     private final TicketRepository ticketRepository;
 
     public TicketSLADTO getSLA(String ticketId) {
-        Ticket ticket = ticketRepository.findById(ticketId)
+        Ticket ticket = ticketRepository.findById(Objects.requireNonNull(ticketId, "ticket id must not be null"))
                 .orElseThrow(() -> new BadRequestException("Ticket not found"));
 
         LocalDateTime referenceTime;

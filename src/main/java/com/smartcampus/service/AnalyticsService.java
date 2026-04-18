@@ -6,7 +6,6 @@ import com.smartcampus.model.BookingStatus;
 import com.smartcampus.model.Resource;
 import com.smartcampus.model.ResourceStatus;
 import com.smartcampus.model.Ticket;
-import com.smartcampus.model.TicketPriority;
 import com.smartcampus.model.TicketStatus;
 import com.smartcampus.repository.BookingRepository;
 import com.smartcampus.repository.ResourceRepository;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,7 +46,8 @@ public class AnalyticsService {
         int totalUsers = userRepository.findAll().size();
 
         Map<String, Long> bookingsByResourceType = allBookings.stream()
-                .map(booking -> resourceRepository.findById(booking.getResourceId()))
+                .map(booking -> resourceRepository.findById(
+                        Objects.requireNonNull(booking.getResourceId(), "resource id must not be null")))
                 .flatMap(java.util.Optional::stream)
                 .map(resource -> resource.getType().name())
                 .collect(Collectors.groupingBy(type -> type, Collectors.counting()));

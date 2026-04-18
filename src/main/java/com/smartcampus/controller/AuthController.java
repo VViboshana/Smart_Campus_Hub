@@ -17,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -66,7 +68,9 @@ public class AuthController {
     @GetMapping("/me/preferences")
     public ResponseEntity<ApiResponse<UserPreferencesResponse>> getUserPreferences() {
         User currentUser = authService.getCurrentUser();
-        User userWithPrefs = notificationService.getUserPreferences(currentUser.getId());
+        User userWithPrefs = notificationService.getUserPreferences(
+            Objects.requireNonNull(currentUser.getId(), "user id must not be null")
+        );
         UserPreferencesResponse response = UserPreferencesResponse.builder()
                 .userId(userWithPrefs.getId())
                 .emailAlerts(userWithPrefs.isEmailAlerts())
@@ -81,7 +85,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<UserPreferencesResponse>> updateUserPreferences(@Valid @RequestBody UpdatePreferencesRequest request) {
         User currentUser = authService.getCurrentUser();
         User updated = notificationService.updateUserPreferences(
-                currentUser.getId(),
+            Objects.requireNonNull(currentUser.getId(), "user id must not be null"),
                 request.getEmailAlerts() != null ? request.getEmailAlerts() : currentUser.isEmailAlerts(),
                 request.getTicketAlerts() != null ? request.getTicketAlerts() : currentUser.isTicketAlerts(),
                 request.getBookingAlerts() != null ? request.getBookingAlerts() : currentUser.isBookingAlerts(),
