@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { ticketAPI, commentAPI } from '../../services/api';
 import { toast } from 'react-toastify';
 import { FiArrowLeft, FiSend, FiTrash2, FiEdit2, FiAlertTriangle, FiMapPin } from 'react-icons/fi';
+import TicketSLABadge from '../../components/tickets/TicketSLABadge';
 
 const TicketDetail = () => {
   const { id } = useParams();
@@ -122,6 +123,7 @@ const TicketDetail = () => {
               <span className="text-sm text-gray-500">{ticket.category}</span>
               <span className={`text-sm font-medium ${priorityColor(ticket.priority)}`}>{ticket.priority}</span>
             </div>
+            <TicketSLABadge ticketId={ticket.id} />
           </div>
           {(ticket.reporterId === user?.id || isAdmin()) && (
             <button onClick={handleDeleteTicket} className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
