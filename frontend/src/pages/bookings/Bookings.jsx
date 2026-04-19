@@ -96,7 +96,7 @@ const Bookings = () => {
                   <span className={`text-xs px-3 py-1 rounded-full font-medium ${statusColor(booking.status)}`}>
                     {booking.status}
                   </span>
-                  {booking.status === 'PENDING' && (
+                  {(booking.status === 'PENDING' || booking.status === 'APPROVED') && (
                     <button onClick={() => handleCancel(booking.id)} className="p-1 text-red-500 hover:bg-red-50 rounded" title="Cancel">
                       <FiXCircle className="w-5 h-5" />
                     </button>

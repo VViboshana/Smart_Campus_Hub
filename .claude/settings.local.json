@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Program Files/Apache/**)",
+      "Read(//c/Program Files/**)",
+      "Read(//c/tools/**)",
+      "Bash(node -version)",
+      "Bash(npm -version)",
+      "Bash(npm --version)",
+      "Read(//c/Users/ASUS/.m2/**)",
+      "Read(//c/ProgramData/chocolatey/bin/**)",
+      "Read(//c/Users/ASUS/AppData/Local/Programs/**)",
+      "Bash(cmd.exe /c \"where mvn 2>&1\")",
+      "Bash(cmd.exe /c \"where mvn\")",
+      "Bash(cmd.exe /c \"where choco 2>&1\")",
+      "Bash(cmd.exe /c \"choco --version 2>&1\")",
+      "Bash(cmd.exe /c \"where mongod 2>&1\")",
+      "Bash(cmd.exe /c \"sc query MongoDB 2>&1\")",
+      "Bash(cmd.exe /c \"sc query MongoDB\")",
+      "Bash(powershell.exe -Command \"Get-Service MongoDB -ErrorAction SilentlyContinue | Select-Object Status,Name\")",
+      "Bash(powershell.exe -Command \"Get-Command mvn -ErrorAction SilentlyContinue\")",
+      "Bash(mvn spring-boot:run)"
+    ]
+  }
+}
