@@ -39,7 +39,7 @@ const TicketManagement = () => {
 
   const handleAssign = async (ticketId, techId) => {
     try {
-      await ticketAPI.assign(ticketId, techId);
+      await ticketAPI.assignTechnician(ticketId, techId);
       toast.success('Technician assigned');
       setAssignModal(null);
       fetchData();

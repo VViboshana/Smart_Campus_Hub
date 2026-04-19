@@ -23,8 +23,9 @@ public class FileStorageService {
         this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.fileStorageLocation);
+            System.out.println("Upload directory initialized at: " + this.fileStorageLocation.toString());
         } catch (IOException ex) {
-            throw new RuntimeException("Could not create upload directory", ex);
+            throw new RuntimeException("Could not create upload directory at " + this.fileStorageLocation.toString() + ": " + ex.getMessage(), ex);
         }
     }
 

@@ -52,10 +52,9 @@ const CreateTicket = () => {
     try {
       const formData = new FormData();
 
-      // Append ticket data fields
-      Object.entries(form).forEach(([key, value]) => {
-        if (value) formData.append(key, value);
-      });
+      // Append ticket data as a single "ticket" part (as JSON blob)
+      const ticketBlob = new Blob([JSON.stringify(form)], { type: 'application/json' });
+      formData.append('ticket', ticketBlob);
 
       // Append images
       files.forEach(file => {

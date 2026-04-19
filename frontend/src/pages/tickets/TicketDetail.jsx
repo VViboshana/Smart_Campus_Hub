@@ -6,6 +6,25 @@ import { toast } from 'react-toastify';
 import { FiArrowLeft, FiSend, FiTrash2, FiEdit2, FiAlertTriangle, FiMapPin } from 'react-icons/fi';
 import TicketSLABadge from '../../components/tickets/TicketSLABadge';
 
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8080').replace(/\/+$/, '');
+
+const resolveAttachmentUrl = (rawUrl) => {
+  if (!rawUrl) return '';
+
+  // Old records can contain frontend host URLs; force them to backend host.
+  if (rawUrl.startsWith('http://localhost:5173/uploads/')) {
+    const path = rawUrl.replace('http://localhost:5173', '');
+    return `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
+  }
+
+  if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) {
+    return rawUrl;
+  }
+
+  const normalizedPath = rawUrl.startsWith('/') ? rawUrl : `/${rawUrl}`;
+  return `${API_BASE}${normalizedPath}`;
+};
+
 const TicketDetail = () => {
   const { id } = useParams();
   const { user, isAdmin, isTechnician } = useAuth();
@@ -39,7 +58,7 @@ const TicketDetail = () => {
     e.preventDefault();
     if (!newComment.trim()) return;
     try {
-      await commentAPI.create(id, { content: newComment });
+      await commentAPI.add(id, { content: newComment });
       setNewComment('');
       fetchData();
       toast.success('Comment added');
@@ -125,7 +144,7 @@ const TicketDetail = () => {
             </div>
             <TicketSLABadge ticketId={ticket.id} />
           </div>
-          {(ticket.reporterId === user?.id || isAdmin()) && (
+          {(ticket.reporterId === user?.id || isAdmin()) && ticket.status !== 'RESOLVED' && ticket.status !== 'CLOSED' && (
             <button onClick={handleDeleteTicket} className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
               <FiTrash2 />
             </button>
@@ -167,11 +186,14 @@ const TicketDetail = () => {
           <div className="mt-6">
             <p className="text-sm font-medium text-gray-700 mb-2">Attachments</p>
             <div className="flex flex-wrap gap-3">
-              {ticket.attachmentUrls.map((url, i) => (
-                <a key={i} href={url} target="_blank" rel="noopener noreferrer">
-                  <img src={url} alt={`Attachment ${i + 1}`} className="w-32 h-32 object-cover rounded-lg border hover:opacity-80" />
-                </a>
-              ))}
+              {ticket.attachmentUrls.map((url, i) => {
+                const imageUrl = resolveAttachmentUrl(url);
+                return (
+                  <a key={i} href={imageUrl} target="_blank" rel="noopener noreferrer">
+                    <img src={imageUrl} alt={`Attachment ${i + 1}`} className="w-32 h-32 object-cover rounded-lg border hover:opacity-80" />
+                  </a>
+                );
+              })}
             </div>
           </div>
         )}

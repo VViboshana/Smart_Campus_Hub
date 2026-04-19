@@ -3,6 +3,20 @@ import { authAPI } from '../services/api';
 
 const AuthContext = createContext(null);
 
+const normalizeRoles = (roles) => {
+  if (!roles) return [];
+
+  const rawRoles = Array.isArray(roles)
+    ? roles
+    : typeof roles === 'object'
+      ? Object.values(roles)
+      : [roles];
+
+  return rawRoles
+    .filter(Boolean)
+    .map((role) => String(role).replace(/^ROLE_/, ''));
+};
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error('useAuth must be used within AuthProvider');
@@ -25,7 +39,8 @@ export const AuthProvider = ({ children }) => {
   const loadUser = async () => {
     try {
       const response = await authAPI.getMe();
-      setUser(response.data.data);
+      const userData = response.data.data;
+      setUser({ ...userData, roles: normalizeRoles(userData?.roles) });
     } catch (error) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
@@ -38,7 +53,7 @@ export const AuthProvider = ({ children }) => {
     const response = await authAPI.login({ email, password });
     const { token, id, name, email: userEmail, roles } = response.data.data;
     localStorage.setItem('token', token);
-    const userData = { id, name, email: userEmail, roles: Array.isArray(roles) ? roles : Object.values(roles) };
+    const userData = { id, name, email: userEmail, roles: normalizeRoles(roles) };
     localStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
     return userData;
@@ -48,7 +63,7 @@ export const AuthProvider = ({ children }) => {
     const response = await authAPI.register({ name, email, password });
     const { token, id, name: userName, email: userEmail, roles } = response.data.data;
     localStorage.setItem('token', token);
-    const userData = { id, name: userName, email: userEmail, roles: Array.isArray(roles) ? roles : Object.values(roles) };
+    const userData = { id, name: userName, email: userEmail, roles: normalizeRoles(roles) };
     localStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
     return userData;
@@ -68,11 +83,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const isAdmin = () => {
-    return user?.roles?.includes('ADMIN');
+    return normalizeRoles(user?.roles).includes('ADMIN');
   };
 
   const isTechnician = () => {
-    return user?.roles?.includes('TECHNICIAN');
+    return normalizeRoles(user?.roles).includes('TECHNICIAN');
   };
 
   const setAuthToken = async (token) => {

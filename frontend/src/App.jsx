@@ -32,11 +32,11 @@ import Settings from './pages/Settings';
 import ResourceHeatmap from './pages/ResourceHeatmap';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin } = useAuth();
 
   if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
   if (!user) return <Navigate to="/login" />;
-  if (adminOnly && !user.roles?.includes('ADMIN')) return <Navigate to="/" />;
+  if (adminOnly && !isAdmin()) return <Navigate to="/" />;
 
   return children;
 };

@@ -177,6 +177,11 @@ public class TicketService {
         if (!ticket.getReporterId().equals(currentUser.getId()) && !isAdmin) {
             throw new UnauthorizedException("You can only delete your own tickets");
         }
+
+        if (ticket.getStatus() == TicketStatus.RESOLVED || ticket.getStatus() == TicketStatus.CLOSED) {
+            throw new BadRequestException("Resolved or closed tickets cannot be deleted");
+        }
+
         ticketRepository.delete(Objects.requireNonNull(ticket, "ticket must not be null"));
     }
 

@@ -27,6 +27,10 @@ public class TicketSLAService {
         Ticket ticket = ticketRepository.findById(Objects.requireNonNull(ticketId, "ticket id must not be null"))
                 .orElseThrow(() -> new BadRequestException("Ticket not found"));
 
+        if (ticket.getCreatedAt() == null) {
+            throw new BadRequestException("Ticket creation time is not available for SLA calculation");
+        }
+
         LocalDateTime referenceTime;
         if (ticket.getStatus() == TicketStatus.RESOLVED && ticket.getResolvedAt() != null) {
             referenceTime = ticket.getResolvedAt();
@@ -36,7 +40,8 @@ public class TicketSLAService {
             referenceTime = LocalDateTime.now();
         }
 
-        long hoursElapsed = ChronoUnit.HOURS.between(ticket.getCreatedAt(), referenceTime);
+        long minutesElapsed = Math.max(0, ChronoUnit.MINUTES.between(ticket.getCreatedAt(), referenceTime));
+        long hoursElapsed = minutesElapsed / 60;
 
         long slaLimitHours = switch (ticket.getPriority()) {
             case CRITICAL -> CRITICAL;
@@ -45,23 +50,39 @@ public class TicketSLAService {
             case LOW -> LOW;
         };
 
-        boolean breached = hoursElapsed > slaLimitHours;
-        double percentUsed = Math.min((hoursElapsed * 100.0) / slaLimitHours, 100.0);
+        boolean breached = minutesElapsed > slaLimitHours * 60;
+        double percentUsed = Math.min((minutesElapsed * 100.0) / (slaLimitHours * 60.0), 100.0);
+
+        boolean finalState = ticket.getStatus() == TicketStatus.RESOLVED || ticket.getStatus() == TicketStatus.CLOSED;
 
         String slaStatus;
-        if (percentUsed < 70.0) {
-            slaStatus = "ON_TRACK";
-        } else if (percentUsed < 100.0) {
-            slaStatus = "AT_RISK";
+        if (finalState) {
+            slaStatus = breached ? "BREACHED" : "MET";
         } else {
-            slaStatus = "BREACHED";
+            if (percentUsed < 70.0) {
+                slaStatus = "ON_TRACK";
+            } else if (percentUsed < 100.0) {
+                slaStatus = "AT_RISK";
+            } else {
+                slaStatus = "BREACHED";
+            }
         }
+
+        long displayHours = minutesElapsed / 60;
+        long displayMinutes = minutesElapsed % 60;
+        String elapsedDisplay = displayHours > 0
+                ? displayHours + "h " + displayMinutes + "m"
+                : displayMinutes + "m";
 
         return TicketSLADTO.builder()
                 .ticketId(ticketId)
+                .ticketStatus(ticket.getStatus().name())
                 .hoursElapsed(hoursElapsed)
+                .minutesElapsed(minutesElapsed)
+                .elapsedDisplay(elapsedDisplay)
                 .slaLimitHours(slaLimitHours)
                 .breached(breached)
+                .finalState(finalState)
                 .slaStatus(slaStatus)
                 .percentUsed(percentUsed)
                 .build();

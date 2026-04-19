@@ -41,17 +41,27 @@ const TicketSLABadge = ({ ticketId }) => {
     borderClass = 'border-red-500';
     barClass = 'bg-red-500';
     badgeClass = 'bg-red-100 text-red-800';
+  } else if (sla.slaStatus === 'MET') {
+    borderClass = 'border-green-500';
+    barClass = 'bg-green-500';
+    badgeClass = 'bg-green-100 text-green-800';
   }
+
+  const elapsedText = sla.elapsedDisplay || `${sla.hoursElapsed}h`;
+  const isFinal = Boolean(sla.finalState);
+  const roundedPercent = Math.round(sla.percentUsed);
 
   return (
     <div className={'bg-white rounded-xl shadow-sm p-4 border-l-4 mb-4 ' + borderClass}>
       <div className="flex justify-between items-center">
-        <div className="text-sm font-semibold text-gray-800">⏱️ SLA Status</div>
+        <div className="text-sm font-semibold text-gray-800">
+          {isFinal ? '⏱️ Final SLA Result' : '⏱️ SLA Status'}
+        </div>
         <span className={'text-xs px-2 py-1 rounded-full font-medium ' + badgeClass}>{sla.slaStatus}</span>
       </div>
 
       <div className="flex gap-4 mt-2">
-        <span className="text-sm text-gray-600">Hours Elapsed: {sla.hoursElapsed}h</span>
+        <span className="text-sm text-gray-600">Time Elapsed: {elapsedText}</span>
         <span className="text-sm text-gray-600">SLA Limit: {sla.slaLimitHours}h</span>
       </div>
 
@@ -60,9 +70,13 @@ const TicketSLABadge = ({ ticketId }) => {
       </div>
 
       <div className="mt-1 text-xs text-gray-500">
-        {sla.breached
-          ? '⚠️ SLA breached — ' + Math.round(sla.percentUsed) + '% of limit used'
-          : Math.round(sla.percentUsed) + '% of SLA used'}
+        {isFinal
+          ? (sla.breached
+              ? `⚠️ Resolved after SLA deadline (${roundedPercent}% of limit used)`
+              : `Resolved within SLA (${roundedPercent}% of limit used)`)
+          : (sla.breached
+              ? `⚠️ SLA breached - ${roundedPercent}% of limit used`
+              : `${roundedPercent}% of SLA used`)}
       </div>
     </div>
   );
