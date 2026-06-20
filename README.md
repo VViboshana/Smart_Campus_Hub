@@ -67,27 +67,6 @@ node -v
 npm -v
 ```
 
-## Environment Variables
-
-Create a root `.env` file (already gitignored) with values like:
-
-```env
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-MONGODB_URI=mongodb://localhost:27017/smart_campus_db
-JWT_SECRET=your_strong_jwt_secret
-PORT=8080
-CORS_ORIGINS=http://localhost:5173,http://localhost:3000
-OAUTH2_REDIRECT_URI=http://localhost:8080/login/oauth2/code/google
-ADMIN_EMAIL_REGEX=^(?i)admin[0-9]*@smartcampus\.edu$
-TECHNICIAN_EMAIL_REGEX=^(?i)(tech|technician)[0-9]*@smartcampus\.edu$
-```
-
-Optional frontend environment file (`frontend/.env.local`):
-
-```env
-VITE_API_URL=http://localhost:8080
-```
 
 If `VITE_API_URL` is not set, frontend defaults to Vite proxy `/api`.
 
